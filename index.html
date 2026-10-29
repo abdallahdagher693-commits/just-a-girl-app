@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Just A Girl</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#d63384">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Just A Girl">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+  :root { --pink: #d63384; --bg: #fdf2f7; --ink: #1f1f29; --muted: #8a8797; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: 'Cairo', Tahoma, system-ui, sans-serif; overflow: hidden; }
+  #app { position: fixed; top: env(safe-area-inset-top); right: 0; bottom: 0; left: 0;
+    width: 100%; height: calc(100% - env(safe-area-inset-top)); border: 0; background: var(--bg); }
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; background: var(--bg); z-index: 2; text-align: center; padding: 24px; }
+  .screen img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 8px 24px rgba(166, 30, 102, .25); }
+  .screen b { font-size: 22px; color: var(--pink); }
+  .screen span { color: var(--muted); font-size: 14px; }
+  .screen button { font: inherit; border: 0; background: var(--pink); color: #fff; border-radius: 12px; padding: 10px 22px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div id="splash" class="screen">
+  <img src="icon-192.png" alt="">
+  <b>Just A Girl</b>
+  <span>جاري التحميل...</span>
+</div>
+<div id="offline" class="screen" hidden>
+  <img src="icon-192.png" alt="">
+  <b>مفيش إنترنت</b>
+  <span>السيستم محتاج إنترنت عشان يشتغل. اتأكد من الاتصال وحاول تاني.</span>
+  <button id="retry">حاول تاني</button>
+</div>
+<iframe id="app" title="Just A Girl POS" allow="clipboard-write; camera; fullscreen"></iframe>
+<script>
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbxdvXNAV7NWmhV3oTrBscunYwR0j4rjpKNPitdGcl2PnosloPrawqngakec4mFGqB7uWA/exec';
+  var frame = document.getElementById('app');
+  var splash = document.getElementById('splash');
+  var offline = document.getElementById('offline');
+  function load() {
+    if (!navigator.onLine) { offline.hidden = false; splash.hidden = true; return; }
+    offline.hidden = true; splash.hidden = false;
+    frame.src = APP_URL;
+  }
+  frame.addEventListener('load', function () { if (frame.src) setTimeout(function () { splash.hidden = true; }, 300); });
+  document.getElementById('retry').onclick = load;
+  window.addEventListener('online', function () { if (!offline.hidden) load(); });
+  load();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+</script>
+</body>
+</html>
